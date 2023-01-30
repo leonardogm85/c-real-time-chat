@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace RealTimeChat.Migrations
+namespace RealTimeChat.Api.Migrations
 {
     public partial class CreateDatabase : Migration
     {

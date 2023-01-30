@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RealTimeChat.Data;
+using RealTimeChat.Api.Data;
 
 #nullable disable
 
-namespace RealTimeChat.Migrations
+namespace RealTimeChat.Api.Migrations
 {
     [DbContext(typeof(ChatContext))]
     partial class ChatContextModelSnapshot : ModelSnapshot
@@ -22,7 +22,7 @@ namespace RealTimeChat.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("RealTimeChat.Models.Group", b =>
+            modelBuilder.Entity("RealTimeChat.Api.Models.Group", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace RealTimeChat.Migrations
                     b.ToTable("Groups");
                 });
 
-            modelBuilder.Entity("RealTimeChat.Models.Message", b =>
+            modelBuilder.Entity("RealTimeChat.Api.Models.Message", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -67,7 +67,7 @@ namespace RealTimeChat.Migrations
                     b.ToTable("Messages");
                 });
 
-            modelBuilder.Entity("RealTimeChat.Models.User", b =>
+            modelBuilder.Entity("RealTimeChat.Api.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()

@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using RealTimeChat.Data;
+using RealTimeChat.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +19,6 @@ app.UseRouting();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}");
+    pattern: "{controller=Home}/{action=Login}");
 
 app.Run();
