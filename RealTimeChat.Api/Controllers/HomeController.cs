@@ -4,7 +4,7 @@ namespace RealTimeChat.Api.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult SignIn()
+        public IActionResult LogIn()
         {
             return View();
         }
@@ -14,7 +14,7 @@ namespace RealTimeChat.Api.Controllers
             return View();
         }
 
-        public IActionResult Chat()
+        public IActionResult Talk()
         {
             return View();
         }

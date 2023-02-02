@@ -1,0 +1,68 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+@section Styles {
+    <style type="text/css">
+        body {
+            background-color: #f0f0f0;
+        }
+    </style>
+}
+
+<div class="sidenav">
+    <div class="container">
+        <img class="talk-image-chat" src="~/images/chat.png" />
+    </div>
+
+    <div class="talk-user-list">
+        <div class="talk-user-item">
+            <img class="talk-image-user" src="~/images/chat.png" />
+
+            <div>
+                <span class="talk-user-name">Leonardo Martins (online)</span>
+                <span class="talk-user-email">leonardo.martins@toroinvestgimentos.com.br</span>
+            </div>
+        </div>
+
+        <div class="talk-user-item">
+            <img class="talk-image-user" src="~/images/chat.png" />
+
+            <div>
+                <span class="talk-user-name">Leonardo Martins (offline)</span>
+                <span class="talk-user-email">leonardo.martins@toroinvestgimentos.com.br</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="main">
+    <div class="talk-message-list">
+        <div class="task-message-item talk-message-left">
+            <div class="task-message-head">
+                <img src="~/images/message.png" />
+                Aline
+            </div>
+
+            <div class="task-message-body">
+                Olá José! Como vai?
+            </div>
+        </div>
+
+        <div class="task-message-item talk-message-right">
+            <div class="task-message-head">
+                <img src="~/images/message.png" />
+                Eu
+            </div>
+
+            <div class="task-message-body">
+                Olá José! Como vai?
+            </div>
+        </div>
+    </div>
+
+    <div class="talk-message-button">
+        <input class="talk-message-text" type="text" placeholder="Message" />
+        <button class="talk-message-send"></button>
+    </div>
+</div>
