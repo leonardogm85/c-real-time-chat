@@ -9,6 +9,7 @@ input[type=text] {
     border-radius: 25px;
     border: none;
     padding: 15px 5%;
+    margin-bottom: 10px;
     width: 90%;
     font-size: 18px;
 }
@@ -32,7 +33,7 @@ input[type=button] {
 
 .container {
     margin: 0 auto;
-    padding: 40px;
+    padding: 40px 40px 0 40px;
     color: white;
     max-width: 768px;
     text-align: center;
@@ -47,7 +48,7 @@ input[type=button] {
 }
 
 .register-image {
-    width: 250px;
+    width: 200px;
 }
 
 .talk-image-chat {
@@ -99,6 +100,10 @@ input[type=button] {
     border: none;
     height: 50px;
     margin-left: 10px;
+}
+
+.talk-message-text {
+    margin: 0 !important;
 }
 
 .task-message-item {
