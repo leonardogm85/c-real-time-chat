@@ -8,6 +8,7 @@ const startConnection = async () => {
         .start()
         .then(() => {
             console.info('Started!');
+            ready();
         })
         .catch((err) => {
             console.error(err);
@@ -17,3 +18,23 @@ const startConnection = async () => {
 
 connection.onclose(startConnection);
 
+const ready = () => {
+    const register = document.getElementById('register');
+
+    register?.addEventListener('click', async () => {
+        const name = document.getElementById('name');
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+
+        const user = {
+            name: name.value,
+            email: email.value,
+            password: password.value
+        };
+
+        await connection
+            .invoke('Register', user)
+            .then(() => console.info('Registered Successfully!'))
+            .then(console.error);
+    });
+};
