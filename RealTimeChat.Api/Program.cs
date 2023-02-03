@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RealTimeChat.Api.Data;
+using RealTimeChat.Api.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,8 @@ var app = builder.Build();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.MapHub<ChatHub>("/ChatHub");
 
 app.MapControllerRoute(
     name: "default",
