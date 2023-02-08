@@ -18,6 +18,8 @@ const startConnection = async () => {
 
 connection.onclose(startConnection);
 
+startConnection();
+
 const ready = () => {
     const register = document.getElementById('register');
 
@@ -35,6 +37,20 @@ const ready = () => {
         await connection
             .invoke('Register', user)
             .then(() => console.info('Registered Successfully!'))
-            .then(console.error);
+            .catch(console.error);
+    });
+
+    connection.on('ReceiveRegisteredUser', (success, user, message) => {
+        const result = document.getElementById('result');
+
+        if (success) {
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('password').value = '';
+
+            console.info(user);
+        }
+
+        result.innerText = message;
     });
 };
