@@ -16,12 +16,11 @@ const startConnection = async () => {
         });
 };
 
-connection.onclose(startConnection);
-
 startConnection();
 
 const ready = () => {
     const register = document.getElementById('register');
+    const logIn = document.getElementById('logIn');
 
     register?.addEventListener('click', async () => {
         const name = document.getElementById('name');
@@ -39,6 +38,23 @@ const ready = () => {
             .then(() => console.info('Registered Successfully!'))
             .catch(console.error);
     });
+
+    logIn?.addEventListener('click', async () => {
+        const email = document.getElementById('email');
+        const password = document.getElementById('password');
+
+        const user = {
+            email: email.value,
+            password: password.value
+        };
+
+        await connection
+            .invoke('LogIn', user)
+            .then(() => console.info('Logged In Successfully!'))
+            .catch(console.error);
+    });
+
+    connection.onclose(startConnection);
 
     connection.on('ReceiveRegisteredUser', (success, user, message) => {
         const result = document.getElementById('result');
