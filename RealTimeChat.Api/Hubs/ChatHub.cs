@@ -28,5 +28,17 @@ namespace RealTimeChat.Api.Hubs
                 await Clients.Caller.SendAsync("ReceiveRegisteredUser", true, user, "Registered successfully!");
             }
         }
+
+        public async Task LogIn(User user)
+        {
+            if (await _context.Users.AnyAsync(u => u.Email == user.Email && u.Password == user.Password))
+            {
+                await Clients.Caller.SendAsync("ReceiveLoggedInUser", true, user, "Logged In successfully!");
+            }
+            else
+            {
+                await Clients.Caller.SendAsync("ReceiveLoggedInUser", false, user, "Email or password invalid!");
+            }
+        }
     }
 }

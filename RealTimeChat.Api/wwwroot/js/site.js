@@ -35,7 +35,7 @@ const ready = () => {
 
         await connection
             .invoke('Register', user)
-            .then(() => console.info('Registered Successfully!'))
+            .then(() => console.info('Invoked Successfully!'))
             .catch(console.error);
     });
 
@@ -50,7 +50,7 @@ const ready = () => {
 
         await connection
             .invoke('LogIn', user)
-            .then(() => console.info('Logged In Successfully!'))
+            .then(() => console.info('Invoked Successfully!'))
             .catch(console.error);
     });
 
@@ -69,4 +69,24 @@ const ready = () => {
 
         result.innerText = message;
     });
+
+    connection.on('ReceiveLoggedInUser', (success, user, message) => {
+        if (success) {
+            setLoggedInUser(user);
+
+            console.info(user);
+
+            window.location = '/Home/Talk';
+        } else {
+            document.getElementById('result').innerText = message;
+        }
+    });
+};
+
+const setLoggedInUser = (loggedInUser) => {
+    sessionStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+};
+
+const getLoggedInUser = () => {
+    return JSON.parse(sessionStorage.getItem('loggedInUser'));
 };
