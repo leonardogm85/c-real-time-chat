@@ -162,3 +162,9 @@ input[type=button] {
     margin-left: 320px;
     padding: 0 10px;
 }
+
+.alert {
+    margin-top: 20px;
+    font-size: 25px;
+    color: darkred;
+}

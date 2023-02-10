@@ -21,6 +21,18 @@ startConnection();
 const ready = () => {
     const register = document.getElementById('register');
     const logIn = document.getElementById('logIn');
+    const logOut = document.getElementById('logOut');
+    const redirect = document.getElementById('redirect');
+
+    const talk = document.getElementById('talk');
+
+    if (logIn && getLoggedInUser()) {
+        goTalk();
+    }
+
+    if (talk && !getLoggedInUser()) {
+        goLogIn();
+    }
 
     register?.addEventListener('click', async () => {
         const name = document.getElementById('name');
@@ -54,6 +66,13 @@ const ready = () => {
             .catch(console.error);
     });
 
+    logOut?.addEventListener('click', () => {
+        removeLoggedInUser();
+        goLogIn();
+    });
+
+    redirect?.addEventListener('click', goRegister);
+
     connection.onclose(startConnection);
 
     connection.on('ReceiveRegisteredUser', (success, user, message) => {
@@ -73,10 +92,9 @@ const ready = () => {
     connection.on('ReceiveLoggedInUser', (success, user, message) => {
         if (success) {
             setLoggedInUser(user);
+            goTalk();
 
             console.info(user);
-
-            window.location = '/Home/Talk';
         } else {
             document.getElementById('result').innerText = message;
         }
@@ -90,3 +108,13 @@ const setLoggedInUser = (loggedInUser) => {
 const getLoggedInUser = () => {
     return JSON.parse(sessionStorage.getItem('loggedInUser'));
 };
+
+const removeLoggedInUser = () => {
+    sessionStorage.removeItem('loggedInUser');
+};
+
+const goLogIn = () => window.location = '/Home/LogIn';
+
+const goRegister = () => window.location = '/Home/Register';
+
+const goTalk = () => window.location = '/Home/Talk';
