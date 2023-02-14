@@ -73,8 +73,9 @@ namespace RealTimeChat.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("ConnectionId")
-                        .HasColumnType("bit");
+                    b.Property<string>("ConnectionsId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()

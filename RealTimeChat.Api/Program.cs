@@ -6,11 +6,14 @@ var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<ChatContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<ChatContext>(o => o.UseSqlServer(connectionString));
 
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
-builder.Services.AddSignalR();
+builder.Services.AddSignalR(c =>
+{
+    c.EnableDetailedErrors = true;
+});
 
 var app = builder.Build();
 

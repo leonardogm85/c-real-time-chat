@@ -12,7 +12,7 @@ using RealTimeChat.Api.Data;
 namespace RealTimeChat.Api.Migrations
 {
     [DbContext(typeof(ChatContext))]
-    [Migration("20230129230748_CreateDatabase")]
+    [Migration("20230211012827_CreateDatabase")]
     partial class CreateDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -75,8 +75,9 @@ namespace RealTimeChat.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("ConnectionId")
-                        .HasColumnType("bit");
+                    b.Property<string>("ConnectionsId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
                         .IsRequired()

@@ -46,7 +46,7 @@ namespace RealTimeChat.Api.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     IsOnline = table.Column<bool>(type: "bit", nullable: false),
-                    ConnectionId = table.Column<bool>(type: "bit", nullable: false)
+                    ConnectionsId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {

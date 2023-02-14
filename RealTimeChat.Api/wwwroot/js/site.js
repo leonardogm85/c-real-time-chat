@@ -18,11 +18,12 @@ const startConnection = async () => {
 
 startConnection();
 
-const ready = () => {
+const ready = async () => {
     const register = document.getElementById('register');
     const logIn = document.getElementById('logIn');
     const logOut = document.getElementById('logOut');
-    const redirect = document.getElementById('redirect');
+    const redirectRegister = document.getElementById('goRegister');
+    const redirectLogIn = document.getElementById('backLogIn');
 
     const talk = document.getElementById('talk');
 
@@ -30,8 +31,15 @@ const ready = () => {
         goTalk();
     }
 
-    if (talk && !getLoggedInUser()) {
-        goLogIn();
+    if (talk) {
+        if (getLoggedInUser()) {
+            await connection
+                .invoke('AddConnection', getLoggedInUser().id)
+                .then(() => console.info('AddConnection Invoked Successfully!'))
+                .catch(console.error);
+        } else {
+            goLogIn();
+        }
     }
 
     register?.addEventListener('click', async () => {
@@ -47,7 +55,7 @@ const ready = () => {
 
         await connection
             .invoke('Register', user)
-            .then(() => console.info('Invoked Successfully!'))
+            .then(() => console.info('Register Invoked Successfully!'))
             .catch(console.error);
     });
 
@@ -62,16 +70,23 @@ const ready = () => {
 
         await connection
             .invoke('LogIn', user)
-            .then(() => console.info('Invoked Successfully!'))
+            .then(() => console.info('LogIn Invoked Successfully!'))
             .catch(console.error);
     });
 
-    logOut?.addEventListener('click', () => {
-        removeLoggedInUser();
-        goLogIn();
+    logOut?.addEventListener('click', async () => {
+        await connection
+            .invoke('RemoveConnection', getLoggedInUser().id)
+            .then(() => {
+                removeLoggedInUser();
+                goLogIn();
+            })
+            .catch(console.error);
     });
 
-    redirect?.addEventListener('click', goRegister);
+    redirectRegister?.addEventListener('click', goRegister);
+
+    redirectLogIn?.addEventListener('click', goLogIn);
 
     connection.onclose(startConnection);
 
@@ -82,7 +97,6 @@ const ready = () => {
             document.getElementById('name').value = '';
             document.getElementById('email').value = '';
             document.getElementById('password').value = '';
-
             console.info(user);
         }
 
@@ -93,7 +107,6 @@ const ready = () => {
         if (success) {
             setLoggedInUser(user);
             goTalk();
-
             console.info(user);
         } else {
             document.getElementById('result').innerText = message;
