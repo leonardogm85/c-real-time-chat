@@ -94,5 +94,11 @@ namespace RealTimeChat.Api.Hubs
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task GetUsers()
+        {
+            var users = await _context.Users.AsNoTracking().ToListAsync();
+            await Clients.Caller.SendAsync("ReceiveUsers", users);
+        }
     }
 }

@@ -19,6 +19,8 @@ const startConnection = async () => {
 startConnection();
 
 const ready = async () => {
+    startEvents();
+
     const register = document.getElementById('register');
     const logIn = document.getElementById('logIn');
     const logOut = document.getElementById('logOut');
@@ -33,6 +35,11 @@ const ready = async () => {
 
     if (talk) {
         if (getLoggedInUser()) {
+            await connection
+                .invoke('GetUsers')
+                .then(() => console.info('GetUsers Invoked Successfully!'))
+                .catch(console.error);
+
             await connection
                 .invoke('AddConnection', getLoggedInUser().id)
                 .then(() => console.info('AddConnection Invoked Successfully!'))
@@ -87,7 +94,27 @@ const ready = async () => {
     redirectRegister?.addEventListener('click', goRegister);
 
     redirectLogIn?.addEventListener('click', goLogIn);
+};
 
+const setLoggedInUser = (loggedInUser) => {
+    sessionStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
+};
+
+const getLoggedInUser = () => {
+    return JSON.parse(sessionStorage.getItem('loggedInUser'));
+};
+
+const removeLoggedInUser = () => {
+    sessionStorage.removeItem('loggedInUser');
+};
+
+const goLogIn = () => window.location = '/Home/LogIn';
+
+const goRegister = () => window.location = '/Home/Register';
+
+const goTalk = () => window.location = '/Home/Talk';
+
+const startEvents = () => {
     connection.onclose(startConnection);
 
     connection.on('ReceiveRegisteredUser', (success, user, message) => {
@@ -112,22 +139,22 @@ const ready = async () => {
             document.getElementById('result').innerText = message;
         }
     });
+
+    connection.on('ReceiveUsers', (users) => {
+        let content = '';
+
+        for (var user of users) {
+            content +=
+                `<div class="talk-user-item">
+                    <img class="talk-image-user" src="/images/chat.png" />
+                    <div>
+                        <div class="talk-user-name">${user.name} (${user.isOnline ? 'online' : 'offline'})</div>
+                        <div class="talk-user-email">${user.email}</div>
+                    </div>
+                </div>`;
+        }
+
+        document.getElementById('users').innerHTML = content;
+        console.info(users);
+    });
 };
-
-const setLoggedInUser = (loggedInUser) => {
-    sessionStorage.setItem('loggedInUser', JSON.stringify(loggedInUser));
-};
-
-const getLoggedInUser = () => {
-    return JSON.parse(sessionStorage.getItem('loggedInUser'));
-};
-
-const removeLoggedInUser = () => {
-    sessionStorage.removeItem('loggedInUser');
-};
-
-const goLogIn = () => window.location = '/Home/LogIn';
-
-const goRegister = () => window.location = '/Home/Register';
-
-const goTalk = () => window.location = '/Home/Talk';
