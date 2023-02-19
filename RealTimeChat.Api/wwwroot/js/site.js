@@ -143,7 +143,7 @@ const startEvents = () => {
     connection.on('ReceiveUsers', (users) => {
         let content = '';
 
-        for (var user of users) {
+        for (const user of users) {
             if (user.id !== getLoggedInUser().id) {
                 content +=
                     `<div class="talk-user-item">
@@ -156,7 +156,28 @@ const startEvents = () => {
             }
         }
 
-        document.getElementById('users').innerHTML = content;
+        const list = document.getElementById('users');
+
+        list.innerHTML = content;
+
+        const items = list.getElementsByClassName('talk-user-item');
+
+        for (const item of items) {
+            item.addEventListener('click', async (event) => {
+                const loggedInUserEmail = getLoggedInUser().email;
+
+                const selectedUserEmail = event.target
+                    .closest('.talk-user-item')
+                    .querySelector('.talk-user-email')
+                    .innerText;
+
+                await connection
+                    .invoke('CreateGroup', loggedInUserEmail, selectedUserEmail)
+                    .then(() => console.info('CreateGroup Invoked Successfully!'))
+                    .catch(console.error);
+            });
+        }
+
         console.info(users);
     });
 };

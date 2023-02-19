@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using RealTimeChat.Api.Data;
+using RealTimeChat.Api.Models;
 using RealTimeChat.Api.ViewModels;
 using System.Text.Json;
 
@@ -56,13 +57,13 @@ namespace RealTimeChat.Api.Hubs
             {
                 var connectionsId = new List<string>();
 
-                if (string.IsNullOrEmpty(user!.ConnectionsId))
+                if (string.IsNullOrEmpty(user.ConnectionsId))
                 {
                     connectionsId.Add(Context.ConnectionId);
                 }
                 else
                 {
-                    connectionsId = JsonSerializer.Deserialize<List<string>>(user!.ConnectionsId);
+                    connectionsId = JsonSerializer.Deserialize<List<string>>(user.ConnectionsId);
 
                     if (!connectionsId!.Any(c => c == Context.ConnectionId))
                     {
@@ -70,14 +71,28 @@ namespace RealTimeChat.Api.Hubs
                     }
                 }
 
-                user!.SetConnectionsId(JsonSerializer.Serialize(connectionsId));
-                user!.SetIsOnline(true);
+                user.SetConnectionsId(JsonSerializer.Serialize(connectionsId));
+                user.SetIsOnline(true);
                 await _context.SaveChangesAsync();
 
                 var users = await _context.Users
                     .AsNoTracking()
+                    .Select(u => (UserViewModel)u)
                     .ToListAsync();
-                await Clients.All.SendAsync("ReceiveUsers", users);
+                await Clients.Others.SendAsync("ReceiveUsers", users);
+
+                var groups = await _context.Groups
+                    .AsNoTracking()
+                    .Where(g => g.Users.Contains(user.Email))
+                    .ToListAsync();
+
+                groups.ForEach(g =>
+                {
+                    connectionsId?.ForEach(async c =>
+                    {
+                        await Groups.AddToGroupAsync(c, g.Name);
+                    });
+                });
             }
         }
 
@@ -85,23 +100,37 @@ namespace RealTimeChat.Api.Hubs
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
-            if (user is not null && !string.IsNullOrEmpty(user!.ConnectionsId))
+            if (user is not null && !string.IsNullOrEmpty(user.ConnectionsId))
             {
-                var connectionsId = JsonSerializer.Deserialize<List<string>>(user!.ConnectionsId);
+                var connectionsId = JsonSerializer.Deserialize<List<string>>(user.ConnectionsId);
 
                 if (connectionsId!.Any(c => c == Context.ConnectionId))
                 {
                     connectionsId!.Remove(Context.ConnectionId);
                 }
 
-                user!.SetConnectionsId(JsonSerializer.Serialize(connectionsId));
-                user!.SetIsOnline(false);
+                user.SetConnectionsId(JsonSerializer.Serialize(connectionsId));
+                user.SetIsOnline(false);
                 await _context.SaveChangesAsync();
 
                 var users = await _context.Users
                     .AsNoTracking()
+                    .Select(u => (UserViewModel)u)
                     .ToListAsync();
-                await Clients.All.SendAsync("ReceiveUsers", users);
+                await Clients.Others.SendAsync("ReceiveUsers", users);
+
+                var groups = await _context.Groups
+                    .AsNoTracking()
+                    .Where(g => g.Users.Contains(user.Email))
+                    .ToListAsync();
+
+                groups.ForEach(g =>
+                {
+                    connectionsId?.ForEach(async c =>
+                    {
+                        await Groups.RemoveFromGroupAsync(c, g.Name);
+                    });
+                });
             }
         }
 
@@ -109,8 +138,62 @@ namespace RealTimeChat.Api.Hubs
         {
             var users = await _context.Users
                 .AsNoTracking()
+                .Select(u => (UserViewModel)u)
                 .ToListAsync();
             await Clients.Caller.SendAsync("ReceiveUsers", users);
+        }
+
+        public async Task CreateGroup(string loggedInUserEmail, string selectedUserEmail)
+        {
+            var loggedInUser = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Email == loggedInUserEmail);
+
+            var selectedUser = await _context.Users
+                .AsNoTracking()
+                .FirstOrDefaultAsync(u => u.Email == selectedUserEmail);
+
+            if (loggedInUser is not null && selectedUser is not null)
+            {
+                var emails = new List<string>
+                {
+                    loggedInUserEmail,
+                    selectedUserEmail
+                };
+
+                var groupName = emails
+                    .OrderBy(e => e)
+                    .Aggregate((a, e) => $"{a}-{e}");
+
+                var group = await _context.Groups
+                    .AsNoTracking()
+                    .FirstOrDefaultAsync(g => g.Name == groupName);
+
+                if (group is null)
+                {
+                    var serializedUsers = JsonSerializer.Serialize(emails.OrderBy(e => e));
+
+                    group = new(groupName, serializedUsers);
+
+                    await _context.Groups.AddAsync(group);
+                    await _context.SaveChangesAsync();
+                }
+
+                var users = new List<User> {
+                    loggedInUser,
+                    selectedUser
+                };
+
+                users.ForEach(u =>
+                {
+                    var connectionsId = JsonSerializer.Deserialize<List<string>>(u.ConnectionsId);
+
+                    connectionsId?.ForEach(async c =>
+                    {
+                        await Groups.AddToGroupAsync(c, groupName);
+                    });
+                });
+            }
         }
     }
 }
