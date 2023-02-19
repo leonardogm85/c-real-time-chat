@@ -144,14 +144,16 @@ const startEvents = () => {
         let content = '';
 
         for (var user of users) {
-            content +=
-                `<div class="talk-user-item">
-                    <img class="talk-image-user" src="/images/chat.png" />
-                    <div>
-                        <div class="talk-user-name">${user.name} (${user.isOnline ? 'online' : 'offline'})</div>
-                        <div class="talk-user-email">${user.email}</div>
-                    </div>
-                </div>`;
+            if (user.id !== getLoggedInUser().id) {
+                content +=
+                    `<div class="talk-user-item">
+                        <img class="talk-image-user" src="/images/chat.png" />
+                        <div>
+                            <div class="talk-user-name">${user.name} (${user.isOnline ? 'online' : 'offline'})</div>
+                            <div class="talk-user-email">${user.email}</div>
+                        </div>
+                    </div>`;
+            }
         }
 
         document.getElementById('users').innerHTML = content;

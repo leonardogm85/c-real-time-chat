@@ -50,19 +50,19 @@ namespace RealTimeChat.Api.Hubs
 
         public async Task AddConnection(Guid id)
         {
-            var model = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
-            if (model is not null)
+            if (user is not null)
             {
                 var connectionsId = new List<string>();
 
-                if (string.IsNullOrEmpty(model!.ConnectionsId))
+                if (string.IsNullOrEmpty(user!.ConnectionsId))
                 {
                     connectionsId.Add(Context.ConnectionId);
                 }
                 else
                 {
-                    connectionsId = JsonSerializer.Deserialize<List<string>>(model!.ConnectionsId);
+                    connectionsId = JsonSerializer.Deserialize<List<string>>(user!.ConnectionsId);
 
                     if (!connectionsId!.Any(c => c == Context.ConnectionId))
                     {
@@ -70,34 +70,46 @@ namespace RealTimeChat.Api.Hubs
                     }
                 }
 
-                model!.SetConnectionsId(JsonSerializer.Serialize(connectionsId));
-
+                user!.SetConnectionsId(JsonSerializer.Serialize(connectionsId));
+                user!.SetIsOnline(true);
                 await _context.SaveChangesAsync();
+
+                var users = await _context.Users
+                    .AsNoTracking()
+                    .ToListAsync();
+                await Clients.All.SendAsync("ReceiveUsers", users);
             }
         }
 
         public async Task RemoveConnection(Guid id)
         {
-            var model = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
 
-            if (model is not null && !string.IsNullOrEmpty(model!.ConnectionsId))
+            if (user is not null && !string.IsNullOrEmpty(user!.ConnectionsId))
             {
-                var connectionsId = JsonSerializer.Deserialize<List<string>>(model!.ConnectionsId);
+                var connectionsId = JsonSerializer.Deserialize<List<string>>(user!.ConnectionsId);
 
                 if (connectionsId!.Any(c => c == Context.ConnectionId))
                 {
                     connectionsId!.Remove(Context.ConnectionId);
                 }
 
-                model!.SetConnectionsId(JsonSerializer.Serialize(connectionsId));
-
+                user!.SetConnectionsId(JsonSerializer.Serialize(connectionsId));
+                user!.SetIsOnline(false);
                 await _context.SaveChangesAsync();
+
+                var users = await _context.Users
+                    .AsNoTracking()
+                    .ToListAsync();
+                await Clients.All.SendAsync("ReceiveUsers", users);
             }
         }
 
         public async Task GetUsers()
         {
-            var users = await _context.Users.AsNoTracking().ToListAsync();
+            var users = await _context.Users
+                .AsNoTracking()
+                .ToListAsync();
             await Clients.Caller.SendAsync("ReceiveUsers", users);
         }
     }

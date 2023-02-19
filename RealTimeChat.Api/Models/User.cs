@@ -19,5 +19,7 @@
         public string ConnectionsId { get; private set; }
 
         public void SetConnectionsId(string connectionsId) => ConnectionsId = connectionsId;
+
+        public void SetIsOnline(bool isOnline) => IsOnline = isOnline;
     }
 }
