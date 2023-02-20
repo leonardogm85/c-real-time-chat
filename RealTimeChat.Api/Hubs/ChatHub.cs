@@ -49,9 +49,9 @@ namespace RealTimeChat.Api.Hubs
             }
         }
 
-        public async Task AddConnection(Guid id)
+        public async Task AddConnection(Guid userId)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user is not null)
             {
@@ -96,9 +96,9 @@ namespace RealTimeChat.Api.Hubs
             }
         }
 
-        public async Task RemoveConnection(Guid id)
+        public async Task RemoveConnection(Guid userId)
         {
-            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
             if (user is not null && !string.IsNullOrEmpty(user.ConnectionsId))
             {
@@ -193,6 +193,28 @@ namespace RealTimeChat.Api.Hubs
                         await Groups.AddToGroupAsync(c, groupName);
                     });
                 });
+
+                await Clients.Caller.SendAsync("ReceiveGroup", groupName);
+            }
+        }
+
+        public async Task SendMessage(Guid userId, string groupName, string textMessage)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+            var group = await _context.Groups.FirstOrDefaultAsync(g => g.Name == groupName);
+
+            if (user is not null && group is not null && group.Users.Contains(user.Email))
+            {
+                var message = new Message(group.Id, user.Id, textMessage);
+
+                message.SetGroup(group);
+                message.SetUser(user);
+
+                await _context.Messages.AddAsync(message);
+                await _context.SaveChangesAsync();
+
+                await Clients.Group(group.Name).SendAsync("ReceiveMessage", (MessageViewModel)message);
             }
         }
     }

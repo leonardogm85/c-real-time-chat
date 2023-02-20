@@ -19,33 +19,13 @@
         <div id="users" class="talk-user-list">
         </div>
     </div>
-
     <div class="main">
-        <div class="talk-message-list">
-            <div class="task-message-item talk-message-left">
-                <div class="task-message-head">
-                    <img src="~/images/message.png" />
-                    Aline
-                </div>
-                <div class="task-message-body">
-                    Olá José! Como vai?
-                </div>
-            </div>
-
-            <div class="task-message-item talk-message-right">
-                <div class="task-message-head">
-                    <img src="~/images/message.png" />
-                    Eu
-                </div>
-                <div class="task-message-body">
-                    Olá José! Como vai?
-                </div>
-            </div>
+        <div id="messages" class="talk-message-list">
         </div>
-
         <div class="talk-message-button">
-            <input class="talk-message-text" type="text" placeholder="Message" autofocus />
-            <button class="talk-message-send"></button>
+            <input id="groupName" type="hidden" />
+            <input id="textMessage" class="talk-message-text" type="text" placeholder="Message" autofocus />
+            <button id="send" class="talk-message-send"></button>
         </div>
     </div>
 </div>
