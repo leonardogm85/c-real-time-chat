@@ -90,13 +90,19 @@ const receiveUsers = (users) => {
 const receiveGroup = (groupName, messages) => {
     document.getElementById('form').classList.remove('display-none');
     document.getElementById('groupName').value = groupName;
-    document.getElementById('messages').innerHTML = messages.reduce(loadMessages, '');
+
+    const content = document.getElementById('messages');
+
+    content.innerHTML = messages.reduce(loadMessages, '');
+    content.scrollTo(0, content.scrollHeight);
 };
 
 const receiveMessage = (message) => {
     if (message.groupName === document.getElementById('groupName').value) {
         const content = document.getElementById('messages');
+
         content.innerHTML = loadMessages(content.innerHTML, message);
+        content.scrollTo(0, content.scrollHeight);
     }
 };
 
@@ -145,13 +151,15 @@ const logOutUser = async () => {
 };
 
 const sendMessage = async () => {
-    const groupName = document.getElementById('groupName').value;
-    const textMessage = document.getElementById('textMessage').value;
+    const groupName = document.getElementById('groupName');
+    const textMessage = document.getElementById('textMessage');
 
     await connection
-        .invoke('SendMessage', getLoggedInUser().id, groupName, textMessage)
+        .invoke('SendMessage', getLoggedInUser().id, groupName.value, textMessage.value)
         .then(() => console.info('SendMessage Invoked Successfully!'))
         .catch(console.error);
+
+    textMessage.value = '';
 };
 
 const createGroup = async (event) => {
@@ -165,6 +173,13 @@ const createGroup = async (event) => {
     await connection
         .invoke('CreateGroup', loggedInUserEmail, selectedUserEmail)
         .then(() => console.info('CreateGroup Invoked Successfully!'))
+        .catch(console.error);
+};
+
+const unload = async () => {
+    await connection
+        .invoke('RemoveConnection', getLoggedInUser().id)
+        .then(() => console.info('RemoveConnection Invoked Successfully!'))
         .catch(console.error);
 };
 
@@ -243,6 +258,8 @@ const ready = () => {
                 .invoke('AddConnection', getLoggedInUser().id)
                 .then(() => console.info('AddConnection Invoked Successfully!'))
                 .catch(console.error);
+
+            addEventListener('unload', unload);
         } else {
             goLogIn();
         }

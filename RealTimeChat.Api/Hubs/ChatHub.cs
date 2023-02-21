@@ -110,7 +110,7 @@ namespace RealTimeChat.Api.Hubs
                 }
 
                 user.SetConnectionsId(JsonSerializer.Serialize(connectionsId));
-                user.SetIsOnline(false);
+                user.SetIsOnline(connectionsId!.Any());
                 await _context.SaveChangesAsync();
 
                 var users = await _context.Users
@@ -186,12 +186,15 @@ namespace RealTimeChat.Api.Hubs
 
                 users.ForEach(u =>
                 {
-                    var connectionsId = JsonSerializer.Deserialize<List<string>>(u.ConnectionsId);
-
-                    connectionsId?.ForEach(async c =>
+                    if (!string.IsNullOrEmpty(u.ConnectionsId))
                     {
-                        await Groups.AddToGroupAsync(c, groupName);
-                    });
+                        var connectionsId = JsonSerializer.Deserialize<List<string>>(u.ConnectionsId);
+
+                        connectionsId?.ForEach(async c =>
+                        {
+                            await Groups.AddToGroupAsync(c, groupName);
+                        });
+                    }
                 });
 
                 var messages = await _context.Messages
