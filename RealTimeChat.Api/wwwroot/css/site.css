@@ -177,3 +177,7 @@ input[type=button] {
     font-size: 25px;
     color: darkred;
 }
+
+.display-none {
+    display: none;
+}

@@ -87,14 +87,16 @@ const receiveUsers = (users) => {
         .forEach(i => i.addEventListener('click', createGroup));
 };
 
-const receiveGroup = (groupName) => {
+const receiveGroup = (groupName, messages) => {
+    document.getElementById('form').classList.remove('display-none');
     document.getElementById('groupName').value = groupName;
-    document.getElementById('messages').innerHTML = '';
+    document.getElementById('messages').innerHTML = messages.reduce(loadMessages, '');
 };
 
 const receiveMessage = (message) => {
     if (message.groupName === document.getElementById('groupName').value) {
-        document.getElementById('messages').innerHTML += loadMessages(message);
+        const content = document.getElementById('messages');
+        content.innerHTML = loadMessages(content.innerHTML, message);
     }
 };
 
@@ -179,8 +181,9 @@ const loadUsers = (content, user) => {
             </div>`;
 };
 
-const loadMessages = (message) => {
-    return `<div class="task-message-item ${message.userId === getLoggedInUser().id ? 'talk-message-right' : 'talk-message-left'}">
+const loadMessages = (content, message) => {
+    return content
+        + `<div class="task-message-item ${message.userId === getLoggedInUser().id ? 'talk-message-right' : 'talk-message-left'}">
                 <div class="task-message-head">
                     <img src="/images/message.png" />
                     ${message.userName}

@@ -194,7 +194,16 @@ namespace RealTimeChat.Api.Hubs
                     });
                 });
 
-                await Clients.Caller.SendAsync("ReceiveGroup", groupName);
+                var messages = await _context.Messages
+                    .AsNoTracking()
+                    .Include(m => m.Group)
+                    .Include(m => m.User)
+                    .Where(m => m.GroupId == group.Id)
+                    .OrderBy(m => m.CreateAt)
+                    .Select(m => (MessageViewModel)m)
+                    .ToListAsync();
+
+                await Clients.Caller.SendAsync("ReceiveGroup", groupName, messages);
             }
         }
 
