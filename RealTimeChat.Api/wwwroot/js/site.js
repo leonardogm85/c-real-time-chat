@@ -4,6 +4,7 @@ const createConnection = () => {
     return new signalR
         .HubConnectionBuilder()
         .withUrl("/ChatHub")
+        .withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
         .build();
 };
 
@@ -156,10 +157,8 @@ const sendMessage = async () => {
 
     await connection
         .invoke('SendMessage', getLoggedInUser().id, groupName.value, textMessage.value)
-        .then(() => console.info('SendMessage Invoked Successfully!'))
+        .then(() => textMessage.value = '')
         .catch(console.error);
-
-    textMessage.value = '';
 };
 
 const createGroup = async (event) => {

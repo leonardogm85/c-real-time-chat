@@ -3,13 +3,23 @@
   "defaultProvider": "unpkg",
   "libraries": [
     {
-      "library": "@microsoft/signalr@7.0.2",
+      "library": "@microsoft/signalr@6.0.14",
       "destination": "wwwroot/lib/signalr/",
       "files": [
         "dist/browser/signalr.js",
         "dist/browser/signalr.min.js",
         "dist/browser/signalr.js.map",
         "dist/browser/signalr.min.js.map"
+      ]
+    },
+    {
+      "library": "@microsoft/signalr-protocol-msgpack@6.0.14",
+      "destination": "wwwroot/lib/signalr-protocol-msgpack/",
+      "files": [
+        "dist/browser/signalr-protocol-msgpack.js",
+        "dist/browser/signalr-protocol-msgpack.js.map",
+        "dist/browser/signalr-protocol-msgpack.min.js",
+        "dist/browser/signalr-protocol-msgpack.min.js.map"
       ]
     }
   ]

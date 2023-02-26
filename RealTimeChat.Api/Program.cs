@@ -1,3 +1,4 @@
+using MessagePack.Resolvers;
 using Microsoft.EntityFrameworkCore;
 using RealTimeChat.Api.Data;
 using RealTimeChat.Api.Hubs;
@@ -8,12 +9,13 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<ChatContext>(o => o.UseSqlServer(connectionString));
 
-builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+builder.Services
+    .AddControllersWithViews()
+    .AddRazorRuntimeCompilation();
 
-builder.Services.AddSignalR(c =>
-{
-    c.EnableDetailedErrors = true;
-});
+builder.Services
+    .AddSignalR(c => c.EnableDetailedErrors = true)
+    .AddMessagePackProtocol(c => c.SerializerOptions.WithResolver(NativeGuidResolver.Instance));
 
 var app = builder.Build();
 
