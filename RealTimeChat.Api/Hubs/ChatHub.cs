@@ -229,5 +229,17 @@ namespace RealTimeChat.Api.Hubs
                 await Clients.Group(group.Name).SendAsync("ReceiveMessage", (MessageViewModel)message);
             }
         }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var user = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.ConnectionsId.Contains(Context.ConnectionId));
+
+            if (user is not null)
+            {
+                await RemoveConnection(user.Id);
+            }
+
+            await base.OnDisconnectedAsync(exception);
+        }
     }
 }
